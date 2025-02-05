@@ -71,7 +71,7 @@ class TestRoutes(TestCase):
                 ('notes:success', None))
         for name, args in URLS:
             with self.subTest(name=name):
-                # Получаем адрес страницы редактирования или удаления комментария:
+                # Получаем адрес страницы редактирования или удаления
                 url = reverse(name, args=args)
                 redirect_url = f'{login_url}?next={url}'
                 response = self.client.get(url)

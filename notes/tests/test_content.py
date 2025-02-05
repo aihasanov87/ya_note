@@ -1,8 +1,4 @@
-
-from datetime import datetime, timedelta
-from django.conf import settings
 from django.test import TestCase
-from django.utils import timezone
 from django.urls import reverse
 # Импортируем функцию reverse(), она понадобится для получения адреса страницы.
 
