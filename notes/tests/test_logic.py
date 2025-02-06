@@ -30,6 +30,7 @@ class TestPostsCreation(TestCase):
         cls.auth_reader = Client()
         cls.auth_reader.force_login(cls.reader)
 
+        # Новость нужна для теста на создание поста с дублирующим слаг 
         cls.news = Note.objects.create(
             author=cls.author,
             title=cls.COMMENT_TITLE,

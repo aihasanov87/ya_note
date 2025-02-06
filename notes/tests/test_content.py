@@ -1,11 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
-# Импортируем функцию reverse(), она понадобится для получения адреса страницы.
-
-# Импортируем функцию для получения модели пользователя.
 from django.contrib.auth import get_user_model
 
-# Импортируем класс формы.
 from notes.forms import NoteForm
 from notes.models import Note
 
@@ -14,7 +10,7 @@ User = get_user_model()
 
 
 class TestHomePage(TestCase):
-    # Вынесем ссылку на домашнюю страницу в атрибуты класса.
+
     LIST_URL = reverse('notes:list')
 
     @classmethod
@@ -28,6 +24,9 @@ class TestHomePage(TestCase):
                             slug='slugname')
 
     def test_news_count(self):
+        """
+        Проверяем отображение новостей.
+        """
         # авторизуемся и идем на страницу постов
         self.client.force_login(self.author)
         response = self.client.get(self.LIST_URL)
@@ -53,13 +52,17 @@ class TestDetailPage(TestCase):
         # Сохраняем в переменную адрес страницы с новостью:
         cls.detail_url = reverse('notes:add')
 
-    # Проверяем, что аноним не видит форму
     def test_anonymous_client_has_no_form(self):
+        """
+        Проверяем, что аноним не видит форму.
+        """
         response = self.client.get(self.detail_url)
         self.assertIsNone(response.context)
 
-    # Проверяем, что авторизованный видит правильную форму
     def test_authorized_client_has_form(self):
+        """
+        Проверяем, что авторизованный видит правильную форму.
+        """
         # Авторизуем клиент при помощи ранее созданного пользователя.
         self.client.force_login(self.author)
         response = self.client.get(self.detail_url)

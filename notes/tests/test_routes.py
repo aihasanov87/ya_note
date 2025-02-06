@@ -22,9 +22,11 @@ class TestRoutes(TestCase):
             text='Текст статьи',
             slug='slugname'
         )
-    # Проверяем доступы до страниц без авторизации.
 
     def test_pages_availability(self):
+        """
+        Проверяем доступы до страниц без авторизации.
+        """
         urls = (
             ('notes:home', None),
             ('users:login', None),
@@ -37,9 +39,11 @@ class TestRoutes(TestCase):
                 response = self.client.get(url)
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    # Проверяем доступы до страниц с авторизацией
-    # + те, что доступны только авторам.
     def test_availability_for_news_edit_and_delete_and_details(self):
+        """
+        Проверяем доступы до страниц с авторизацией.
+        Проверяем  доступны до страниц только авторами.
+        """
         users_statuses = (
             (self.author, HTTPStatus.OK),
             (self.reader, HTTPStatus.NOT_FOUND),
@@ -58,8 +62,10 @@ class TestRoutes(TestCase):
                     response = self.client.get(url)
                     self.assertEqual(response.status_code, status)
 
-    # Проверка переадресация на авторизацию
     def test_redirect_for_anonymous_client(self):
+        """
+        Проверяем переадресацию на авторизацию
+        """
         # Сохраняем адрес страницы логина:
         login_url = reverse('users:login')
         # В цикле перебираем имена страниц, с которых ожидаем редирект:
