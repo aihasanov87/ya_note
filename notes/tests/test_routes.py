@@ -13,8 +13,8 @@ class TestRoutes(TestCase):
     @classmethod
     def setUpTestData(cls):
         # Создаём двух пользователей с разными именами:
-        cls.author = User.objects.create(username='Лев Толстой')
-        cls.reader = User.objects.create(username='Читатель простой')
+        cls.author = User.objects.create(username='Автор')
+        cls.reader = User.objects.create(username='Не автор')
         # От имени одного пользователя создаём новость
         cls.news = Note.objects.create(
             author=cls.author,

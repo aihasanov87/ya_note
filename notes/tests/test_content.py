@@ -15,14 +15,16 @@ class TestHomePage(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         cls.author = User.objects.create(username='Автор')
-
-        # Создаем новость, для проверки, что она будет оботражаться
-        Note.objects.create(author=cls.author,
-                            title='Новость',
-                            text='Просто текст.',
-                            slug='slugname')
+        cls.reader = User.objects.create(username='Не автор')
+        cls.note = Note.objects.create(author=cls.author,
+                                       title='Новость',
+                                       text='Просто текст.',
+                                       slug='slugname')
+        cls.note_reader = Note.objects.create(author=cls.reader,
+                                              title='Новость2',
+                                              text='Просто текст2.',
+                                              slug='slugname2')
 
     def test_news_count(self):
         """
@@ -38,12 +40,21 @@ class TestHomePage(TestCase):
         # Проверяем, что на странице есть новости.
         self.assertTrue(news_count > 0)
 
+    def test_not_author_not_read_note(self):
+        """
+        Поверяем, что новости недоступны НЕ авторам
+        """
+        self.client.force_login(self.reader)
+        response = self.client.get(self.LIST_URL)
+        object_list = response.context['object_list']
+        self.assertIsNot(self.note, object_list)
+
 
 class TestDetailPage(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.author = User.objects.create(username='Комментатор')
+        cls.author = User.objects.create(username='Автор')
         cls.news = Note.objects.create(
             author=cls.author,
             title='Заголовок',
