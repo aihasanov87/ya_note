@@ -39,6 +39,21 @@ class TestRoutes(TestCase):
                 response = self.client.get(url)
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
+    def test_author_pages_availability(self):
+        """
+        Проверяем, что автору доступны страницы notes, done, add
+        """
+        self.client.force_login(self.author)
+        URLS = ('notes:add',
+                'notes:list',
+                'notes:success',
+                )
+        for name in URLS:
+            with self.subTest(name=name):
+                url = reverse(name)
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, HTTPStatus.OK)
+
     def test_availability_for_news_edit_and_delete_and_details(self):
         """
         Проверяем доступы до страниц с авторизацией.
@@ -55,7 +70,8 @@ class TestRoutes(TestCase):
             # перебираем имена тестируемых страниц:
             URLS = (('notes:edit', (self.news.slug,)),
                     ('notes:delete', (self.news.slug,)),
-                    ('notes:detail', (self.news.slug,)),)
+                    ('notes:detail', (self.news.slug,)),
+                    )
             for name, args in URLS:
                 with self.subTest(user=user, name=name):
                     url = reverse(name, args=args)

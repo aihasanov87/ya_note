@@ -15,9 +15,10 @@ class TestHomePage(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        # Создаем новости, для проверки, что они будут оботражаться
-        cls.author = User.objects.create(username='Комментатор')
 
+        cls.author = User.objects.create(username='Автор')
+
+        # Создаем новость, для проверки, что она будет оботражаться
         Note.objects.create(author=cls.author,
                             title='Новость',
                             text='Просто текст.',
@@ -49,7 +50,6 @@ class TestDetailPage(TestCase):
             text='Текст статьи',
             slug='slugname'
         )
-        # Сохраняем в переменную адрес страницы с новостью:
         cls.detail_url = reverse('notes:add')
 
     def test_anonymous_client_has_no_form(self):
@@ -63,7 +63,6 @@ class TestDetailPage(TestCase):
         """
         Проверяем, что авторизованный видит правильную форму.
         """
-        # Авторизуем клиент при помощи ранее созданного пользователя.
         self.client.force_login(self.author)
         response = self.client.get(self.detail_url)
         self.assertIn('form', response.context)
