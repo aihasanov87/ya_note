@@ -16,7 +16,7 @@ class TestHomePage(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.author = User.objects.create(username='Автор')
-        cls.reader = User.objects.create(username='Не автор')
+        cls.reader = User.objects.create(username='Читатель')
         cls.note = Note.objects.create(author=cls.author,
                                        title='Новость',
                                        text='Просто текст.',

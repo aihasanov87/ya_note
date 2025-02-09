@@ -21,12 +21,12 @@ class TestPostsCreation(TestCase):
     @classmethod
     def setUpTestData(cls):
         # Автор постов
-        cls.author = User.objects.create(username='Лев Толстой')
+        cls.author = User.objects.create(username='Автор')
         cls.auth_client = Client()
         cls.auth_client.force_login(cls.author)
 
         # Еще один автор для проверок невозможности редактирования и удаления
-        cls.reader = User.objects.create(username='Пушкин')
+        cls.reader = User.objects.create(username='Не автор')
         cls.auth_reader = Client()
         cls.auth_reader.force_login(cls.reader)
 
