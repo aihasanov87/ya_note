@@ -65,7 +65,6 @@ class TestPostsCreation(TestCase):
 
     def test_not_create_post_anonymous_user(self):
         """Пытаемся создать пост анонимом"""
-
         form_data = self.base_form_data(slug=f'slugname{uuid.uuid4()}')
 
         response = self.client.post(reverse('notes:add'), data=form_data)
@@ -74,7 +73,6 @@ class TestPostsCreation(TestCase):
 
     def test_duplication_slug_create_post(self):
         """Пытаемся создать пост с имеющимся slug"""
-
         form_data = self.base_form_data(title=uuid.uuid4(),
                                         slug=self.COMMENT_SLUG)
 
@@ -84,7 +82,6 @@ class TestPostsCreation(TestCase):
 
     def test_automatic_creat_post_not_slug(self):
         """Пытаемся создать пост без slug"""
-
         form_data = self.base_form_data(title=f'Тестовый пост {uuid.uuid4()}')
 
         response = self.auth_client.post(reverse('notes:add'), data=form_data)
@@ -95,7 +92,6 @@ class TestPostsCreation(TestCase):
 
     def test_edit_other_autor(self):
         """Проверяем, что не можем править чужой пост"""
-
         form_data = self.base_form_data(title=uuid.uuid4())
 
         response = self.auth_reader.post(
