@@ -27,9 +27,7 @@ class TestHomePage(TestCase):
                                               slug='slugname2')
 
     def test_news_count(self):
-        """
-        Проверяем отображение новостей.
-        """
+        """Проверяем отображение новостей."""
         # авторизуемся и идем на страницу постов
         self.client.force_login(self.author)
         response = self.client.get(self.LIST_URL)
@@ -41,9 +39,7 @@ class TestHomePage(TestCase):
         self.assertTrue(news_count > 0)
 
     def test_not_author_not_read_note(self):
-        """
-        Поверяем, что новости недоступны НЕ авторам
-        """
+        """Поверяем, что новости недоступны НЕ авторам"""
         self.client.force_login(self.reader)
         response = self.client.get(self.LIST_URL)
         object_list = response.context['object_list']
@@ -64,16 +60,12 @@ class TestDetailPage(TestCase):
         cls.detail_url = reverse('notes:add')
 
     def test_anonymous_client_has_no_form(self):
-        """
-        Проверяем, что аноним не видит форму.
-        """
+        """Проверяем, что аноним не видит форму"""
         response = self.client.get(self.detail_url)
         self.assertIsNone(response.context)
 
     def test_authorized_client_has_form(self):
-        """
-        Проверяем, что авторизованный видит правильную форму.
-        """
+        """Проверяем, что авторизованный видит правильную форму"""
         self.client.force_login(self.author)
         response = self.client.get(self.detail_url)
         self.assertIn('form', response.context)

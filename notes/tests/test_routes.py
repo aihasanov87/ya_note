@@ -24,9 +24,7 @@ class TestRoutes(TestCase):
         )
 
     def test_pages_availability(self):
-        """
-        Проверяем доступы до страниц без авторизации.
-        """
+        """Проверяем доступы до страниц без авторизации"""
         urls = (
             ('notes:home', None),
             ('users:login', None),
@@ -40,9 +38,7 @@ class TestRoutes(TestCase):
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_author_pages_availability(self):
-        """
-        Проверяем, что автору доступны страницы notes, done, add
-        """
+        """Проверяем, что автору доступны страницы notes, done, add"""
         self.client.force_login(self.author)
         URLS = ('notes:add',
                 'notes:list',
@@ -79,9 +75,7 @@ class TestRoutes(TestCase):
                     self.assertEqual(response.status_code, status)
 
     def test_redirect_for_anonymous_client(self):
-        """
-        Проверяем переадресацию на авторизацию
-        """
+        """Проверяем переадресацию на авторизацию"""
         # Сохраняем адрес страницы логина:
         login_url = reverse('users:login')
         # В цикле перебираем имена страниц, с которых ожидаем редирект:
