@@ -1,4 +1,6 @@
-from django.test import TestCase
+from http import HTTPStatus
+
+from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 
@@ -11,63 +13,48 @@ User = get_user_model()
 
 class TestHomePage(TestCase):
 
-    LIST_URL = reverse('notes:list')
-
     @classmethod
     def setUpTestData(cls):
+
         cls.author = User.objects.create(username='Автор')
-        cls.reader = User.objects.create(username='Читатель')
-        cls.note = Note.objects.create(author=cls.author,
-                                       title='Новость',
-                                       text='Просто текст.',
-                                       slug='slugname')
-        cls.note_reader = Note.objects.create(author=cls.reader,
-                                              title='Новость2',
-                                              text='Просто текст2.',
-                                              slug='slugname2')
+        cls.author_client = Client()
+        cls.author_client.force_login(cls.author)
 
-    def test_news_count(self):
-        """Проверяем отображение новостей."""
-        # авторизуемся и идем на страницу постов
-        self.client.force_login(self.author)
-        response = self.client.get(self.LIST_URL)
-        # Получаем список объектов из словаря контекста.
-        object_list = response.context['object_list']
-        # Определяем количество записей в списке.
-        news_count = object_list.count()
-        # Проверяем, что на странице есть новости.
-        self.assertTrue(news_count > 0)
-
-    def test_not_author_not_read_note(self):
-        """Поверяем, что новости недоступны НЕ авторам"""
-        self.client.force_login(self.reader)
-        response = self.client.get(self.LIST_URL)
-        object_list = response.context['object_list']
-        self.assertIsNot(self.note, object_list)
-
-
-class TestDetailPage(TestCase):
-
-    @classmethod
-    def setUpTestData(cls):
-        cls.author = User.objects.create(username='Автор')
-        cls.news = Note.objects.create(
+        cls.note = Note.objects.create(
             author=cls.author,
-            title='Заголовок',
-            text='Текст статьи',
-            slug='slugname'
-        )
-        cls.detail_url = reverse('notes:add')
+            title='Новость о том, что произошло',
+            text='Просто текст.',
+            slug='slugname')
 
-    def test_anonymous_client_has_no_form(self):
-        """Проверяем, что аноним не видит форму"""
-        response = self.client.get(self.detail_url)
-        self.assertIsNone(response.context)
+        cls.reader = User.objects.create(username='Читатель')
+        cls.reader_client = Client()
+        cls.reader_client.force_login(cls.reader)
+
+        cls.list_url = reverse('notes:list')
+        cls.detail_url = reverse('notes:add')
+        cls.edit_url = reverse('notes:edit', kwargs={'slug': cls.note.slug})
+
+    def test_read_only_author(self):
+        """Проверяем, что новость отображается и доступна только автору"""
+        users_statuses = (
+            (self.reader_client, False),
+            (self.author_client, True),
+        )
+        for name, args in users_statuses:
+            with self.subTest(name=name, args=args):
+                response = name.get(self.list_url)
+                object_list = response.context['object_list']
+                news_count = object_list.count()
+                self.assertIs(news_count > 0, args)
 
     def test_authorized_client_has_form(self):
-        """Проверяем, что авторизованный видит правильную форму"""
-        self.client.force_login(self.author)
-        response = self.client.get(self.detail_url)
-        self.assertIn('form', response.context)
+        """Проверяем, что авторизованный видит правильные формы"""
+        response_add_form = self.author_client.get(self.detail_url)
+        response_edit_form = self.author_client.get(self.edit_url)
+
+        self.assertIn('form', response_add_form.context)
+        self.assertIn('form', response_edit_form.context)
+
         # Проверим, что объект формы соответствует нужному классу формы.
-        self.assertIsInstance(response.context['form'], NoteForm)
+        self.assertIsInstance(response_add_form.context['form'], NoteForm)
+        self.assertIsInstance(response_edit_form.context['form'], NoteForm)

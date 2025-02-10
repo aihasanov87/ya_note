@@ -26,14 +26,14 @@ class TestRoutes(TestCase):
     def test_pages_availability(self):
         """Проверяем доступы до страниц без авторизации"""
         urls = (
-            ('notes:home', None),
-            ('users:login', None),
-            ('users:logout', None),
-            ('users:signup', None),
+            ('notes:home'),
+            ('users:login'),
+            ('users:logout'),
+            ('users:signup'),
         )
-        for name, args in urls:
+        for name in urls:
             with self.subTest(name=name):
-                url = reverse(name, args=args)
+                url = reverse(name)
                 response = self.client.get(url)
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
@@ -79,13 +79,13 @@ class TestRoutes(TestCase):
         # Сохраняем адрес страницы логина:
         login_url = reverse('users:login')
         # В цикле перебираем имена страниц, с которых ожидаем редирект:
-        URLS = (('notes:edit', (self.news.slug,)),
+        urls = (('notes:edit', (self.news.slug,)),
                 ('notes:delete', (self.news.slug,)),
                 ('notes:detail', (self.news.slug,)),
                 ('notes:add', None),
                 ('notes:list', None),
                 ('notes:success', None))
-        for name, args in URLS:
+        for name, args in urls:
             with self.subTest(name=name):
                 # Получаем адрес страницы редактирования или удаления
                 url = reverse(name, args=args)

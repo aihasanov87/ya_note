@@ -1,7 +1,7 @@
-import uuid
 from http import HTTPStatus
-from pytils.translit import slugify
 
+from pytils.translit import slugify
+import uuid
 from django.contrib.auth import get_user_model
 from django.test import TestCase, Client
 from django.urls import reverse
