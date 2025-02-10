@@ -29,6 +29,19 @@ class TestRoutes(TestCase):
             slug='slugname'
         )
 
+        cls.home_url = reverse('notes:home')
+        cls.add_url = reverse('notes:add')
+        cls.list_url = reverse('notes:list')
+        cls.success_url = reverse('notes:success')
+        cls.edit_url = reverse('notes:edit', kwargs={'slug': cls.news.slug})
+        cls.delete_url = reverse('notes:delete', kwargs={
+                                 'slug': cls.news.slug})
+        cls.detail_url = reverse('notes:detail', kwargs={
+                                 'slug': cls.news.slug})
+        cls.login_url = reverse('users:login')
+        cls.logout_url = reverse('users:logout')
+        cls.signup_url = reverse('users:signup')
+
     def test_pages_availability(self):
         """
         Главная страница доступна анонимному пользователю.
@@ -36,14 +49,14 @@ class TestRoutes(TestCase):
         запись и выхода из неё доступны всем пользователям
         """
         urls = (
-            ('notes:home'),
-            ('users:login'),
-            ('users:logout'),
-            ('users:signup'),
+            self.home_url,
+            self.login_url,
+            self.logout_url,
+            self.signup_url,
         )
         for name in urls:
             with self.subTest(name=name):
-                url = reverse(name)
+                url = name
                 response = self.client.get(url)
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
@@ -54,13 +67,13 @@ class TestRoutes(TestCase):
         страница добавления новой заметки add/
         """
         url = (
-            'notes:add',
-            'notes:list',
-            'notes:success'
+            self.add_url,
+            self.list_url,
+            self.success_url
         )
         for name in url:
             with self.subTest(name=name):
-                url = reverse(name)
+                url = name
                 response = self.reader_client.get(url)
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
@@ -77,13 +90,14 @@ class TestRoutes(TestCase):
         for user, status in users_statuses:
             # Для каждой пары "пользователь - ожидаемый ответ"
             # перебираем имена тестируемых страниц:
-            urls = (('notes:edit', (self.news.slug,)),
-                    ('notes:delete', (self.news.slug,)),
-                    ('notes:detail', (self.news.slug,)),
-                    )
-            for name, args in urls:
+            urls = (
+                self.edit_url,
+                self.delete_url,
+                self.detail_url
+            )
+            for name in urls:
                 with self.subTest(user=user, name=name):
-                    url = reverse(name, args=args)
+                    url = name
                     response = user.get(url)
                     self.assertEqual(response.status_code, status)
 
@@ -95,18 +109,20 @@ class TestRoutes(TestCase):
         перенаправляется на страницу логина.
         """
         # Сохраняем адрес страницы логина:
-        login_url = reverse('users:login')
+        login_url = self.login_url
         # В цикле перебираем имена страниц, с которых ожидаем редирект:
-        urls = (('notes:edit', (self.news.slug,)),
-                ('notes:delete', (self.news.slug,)),
-                ('notes:detail', (self.news.slug,)),
-                ('notes:add', None),
-                ('notes:list', None),
-                ('notes:success', None))
-        for name, args in urls:
+        urls = (
+            self.edit_url,
+            self.delete_url,
+            self.detail_url,
+            self.add_url,
+            self.list_url,
+            self.success_url,
+        )
+        for name in urls:
             with self.subTest(name=name):
                 # Получаем адрес страницы редактирования или удаления
-                url = reverse(name, args=args)
+                url = name
                 redirect_url = f'{login_url}?next={url}'
                 response = self.client.get(url)
                 # Проверяем, что редирект приведёт именно на указанную ссылку.
