@@ -33,11 +33,12 @@ class TestRoutes(TestCase):
         cls.add_url = reverse('notes:add')
         cls.list_url = reverse('notes:list')
         cls.success_url = reverse('notes:success')
-        cls.edit_url = reverse('notes:edit', kwargs={'slug': cls.news.slug})
-        cls.delete_url = reverse('notes:delete', kwargs={
-                                 'slug': cls.news.slug})
-        cls.detail_url = reverse('notes:detail', kwargs={
-                                 'slug': cls.news.slug})
+        cls.edit_url = reverse(
+            'notes:edit', kwargs={'slug': cls.news.slug})
+        cls.delete_url = reverse(
+            'notes:delete', kwargs={'slug': cls.news.slug})
+        cls.detail_url = reverse(
+            'notes:detail', kwargs={'slug': cls.news.slug})
         cls.login_url = reverse('users:login')
         cls.logout_url = reverse('users:logout')
         cls.signup_url = reverse('users:signup')
