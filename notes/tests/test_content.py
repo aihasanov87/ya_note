@@ -32,27 +32,31 @@ class TestHomePage(TestCase):
         cls.detail_url = reverse('notes:add')
         cls.edit_url = reverse('notes:edit', kwargs={'slug': cls.note.slug})
 
-    def test_read_only_author(self):
+    def test_read_authorized_client(self):
         """Проверяем, что новость отображается и доступна только автору"""
-        users_statuses = (
+        client_statuses = (
             (self.reader_client, False),
             (self.author_client, True),
         )
-        for name, args in users_statuses:
-            with self.subTest(name=name, args=args):
-                response = name.get(self.list_url)
+        for client, status in client_statuses:
+            with self.subTest(client=client, status=status):
+                response = client.get(self.list_url)
                 object_list = response.context['object_list']
-                news_count = object_list.count()
-                self.assertIs(news_count > 0, args)
+                titles = [object.title for object in object_list]
+                if self.note.title in titles:
+                    result = True
+                else:
+                    result = False
+                self.assertIs(result, status)
 
     def test_authorized_client_has_form(self):
         """Проверяем, что авторизованный видит правильные формы"""
-        response_add_form = self.author_client.get(self.detail_url)
-        response_edit_form = self.author_client.get(self.edit_url)
-
-        self.assertIn('form', response_add_form.context)
-        self.assertIn('form', response_edit_form.context)
-
-        # Проверим, что объект формы соответствует нужному классу формы.
-        self.assertIsInstance(response_add_form.context['form'], NoteForm)
-        self.assertIsInstance(response_edit_form.context['form'], NoteForm)
+        forms = (
+            self.author_client.get(self.detail_url),
+            self.author_client.get(self.edit_url),
+        )
+        for form in forms:
+            with self.subTest(form=form):
+                self.assertIn('form', form.context)
+            with self.subTest(form=form):
+                self.assertIsInstance(form.context['form'], NoteForm)

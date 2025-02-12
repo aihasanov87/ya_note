@@ -55,9 +55,8 @@ class TestRoutes(TestCase):
             self.logout_url,
             self.signup_url,
         )
-        for name in urls:
-            with self.subTest(name=name):
-                url = name
+        for url in urls:
+            with self.subTest(url=url):
                 response = self.client.get(url)
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
@@ -67,14 +66,13 @@ class TestRoutes(TestCase):
         заметок notes/, страница успешного добавления заметки done/,
         страница добавления новой заметки add/
         """
-        url = (
+        urls = (
             self.add_url,
             self.list_url,
             self.success_url
         )
-        for name in url:
-            with self.subTest(name=name):
-                url = name
+        for url in urls:
+            with self.subTest(url=url):
                 response = self.reader_client.get(url)
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
@@ -84,11 +82,11 @@ class TestRoutes(TestCase):
         доступны только автору заметки. Если на эти страницы попытается
         зайти другой пользователь — вернётся ошибка 404.
         """
-        users_statuses = (
+        client_statuses = (
             (self.author_client, HTTPStatus.OK),
             (self.reader_client, HTTPStatus.NOT_FOUND),
         )
-        for user, status in users_statuses:
+        for client, status in client_statuses:
             # Для каждой пары "пользователь - ожидаемый ответ"
             # перебираем имена тестируемых страниц:
             urls = (
@@ -96,10 +94,9 @@ class TestRoutes(TestCase):
                 self.delete_url,
                 self.detail_url
             )
-            for name in urls:
-                with self.subTest(user=user, name=name):
-                    url = name
-                    response = user.get(url)
+            for url in urls:
+                with self.subTest(url=url):
+                    response = client.get(url)
                     self.assertEqual(response.status_code, status)
 
     def test_redirect_for_anonymous_client(self):
@@ -120,10 +117,9 @@ class TestRoutes(TestCase):
             self.list_url,
             self.success_url,
         )
-        for name in urls:
-            with self.subTest(name=name):
+        for url in urls:
+            with self.subTest(url=url):
                 # Получаем адрес страницы редактирования или удаления
-                url = name
                 redirect_url = f'{login_url}?next={url}'
                 response = self.client.get(url)
                 # Проверяем, что редирект приведёт именно на указанную ссылку.
