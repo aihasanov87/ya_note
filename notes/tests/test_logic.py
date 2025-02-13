@@ -87,7 +87,7 @@ class TestPostsCreation(TestCase):
         """Проверяем, что не можем править чужой пост"""
         response = self.auth_reader.post(self.edit_url, data=self.form_data)
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
-        edit_note = Note.objects.get(id=1)
+        edit_note = Note.objects.get(id=self.note.id)
         self.assertEqual(edit_note.title, self.note.title)
         self.assertEqual(edit_note.text, self.note.text)
         self.assertEqual(edit_note.slug, self.note.slug)
@@ -104,7 +104,7 @@ class TestPostsCreation(TestCase):
         """Проверяем, что можем править свой пост"""
         response = self.auth_author.post(self.edit_url, data=self.form_data)
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
-        update_note = Note.objects.get(id=1)
+        update_note = Note.objects.get(id=self.note.id)
         self.assertEqual(update_note.title, self.form_data['title'])
         self.assertEqual(update_note.text, self.form_data['text'])
         self.assertEqual(update_note.slug, self.form_data['slug'])
