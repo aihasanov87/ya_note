@@ -42,21 +42,16 @@ class TestHomePage(TestCase):
             with self.subTest(client=client, status=status):
                 response = client.get(self.list_url)
                 object_list = response.context['object_list']
-                titles = [object.title for object in object_list]
-                if self.note.title in titles:
-                    result = True
-                else:
-                    result = False
-                self.assertIs(result, status)
+                self.assertIs(self.note in object_list, status)
 
     def test_authorized_client_has_form(self):
         """Проверяем, что авторизованный видит правильные формы"""
-        forms = (
-            self.author_client.get(self.detail_url),
-            self.author_client.get(self.edit_url),
+        urls = (
+            (self.detail_url),
+            (self.edit_url),
         )
-        for form in forms:
-            with self.subTest(form=form):
-                self.assertIn('form', form.context)
-            with self.subTest(form=form):
-                self.assertIsInstance(form.context['form'], NoteForm)
+        for url in urls:
+            response = self.author_client.get(url)
+            with self.subTest(response=response):
+                self.assertIn('form', response.context)
+                self.assertIsInstance(response.context['form'], NoteForm)

@@ -22,7 +22,7 @@ class TestRoutes(TestCase):
         cls.reader_client.force_login(cls.reader)
 
         # От имени одного пользователя создаём новость
-        cls.news = Note.objects.create(
+        cls.note = Note.objects.create(
             author=cls.author,
             title='Заголовок',
             text='Текст статьи',
@@ -34,11 +34,11 @@ class TestRoutes(TestCase):
         cls.list_url = reverse('notes:list')
         cls.success_url = reverse('notes:success')
         cls.edit_url = reverse(
-            'notes:edit', kwargs={'slug': cls.news.slug})
+            'notes:edit', kwargs={'slug': cls.note.slug})
         cls.delete_url = reverse(
-            'notes:delete', kwargs={'slug': cls.news.slug})
+            'notes:delete', kwargs={'slug': cls.note.slug})
         cls.detail_url = reverse(
-            'notes:detail', kwargs={'slug': cls.news.slug})
+            'notes:detail', kwargs={'slug': cls.note.slug})
         cls.login_url = reverse('users:login')
         cls.logout_url = reverse('users:logout')
         cls.signup_url = reverse('users:signup')
